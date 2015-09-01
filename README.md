@@ -2,7 +2,7 @@
 Are you configuring Wildfly's JGroups subsystem and need something to force JGroups to startup upon deployment? Look no further. The "distributable" element causes JGroups to startup.
 
 
-If you are looking for a Wildfly JGroups JDBCPING example, look no further. Below are the relevant snipits from the Wildfly configuration. Note that the SQL is MySQL specific. The ```driver``` element will be different depending on how you installed/deployed the MySQL driver. I was lazy and just copied the MySQL driver, ```mysql-connector-java-5.1.36-bin.jar```, to the deployments directory.
+If you are looking for a Wildfly JGroups JDBCPING example, look no further. Below are the relevant snipits from the Wildfly configuration. Note that the SQL is MySQL specific. The ```driver``` element will be different depending on how you installed/deployed the MySQL driver. I was lazy and just copied the MySQL driver, ```mysql-connector-java-5.1.36-bin.jar```, to the deployments directory. And obviously the IP address in the connection-url will need changed. Change it to wherever the MySQL DB is running.
 ```
 ...
 ...
@@ -54,4 +54,21 @@ SELECT ping_data FROM jgroups.jgroupsping WHERE cluster_name=?
 ...
 ...
 ...
+```
+
+For this example to work, MySQL should be configured something like the following
+```
+create database jgroups;
+create user 'jgroups'@'%' identified by 'some_password_to_your_db';
+grant all on jgroups.* to 'jgroups'@'%';
+
+use jgroups;
+
+CREATE TABLE jgroups.jgroupsping (
+   own_addr varchar(200) NOT NULL,
+   bind_addr varchar(200) NOT NULL,
+   created timestamp NOT NULL,
+   cluster_name varchar(200) NOT NULL,
+   ping_data blob,
+   constraint PK_JGROUPSPING PRIMARY KEY (own_addr, cluster_name));
 ```
