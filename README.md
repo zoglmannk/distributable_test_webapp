@@ -72,3 +72,13 @@ CREATE TABLE jgroups.jgroupsping (
    ping_data blob,
    constraint PK_JGROUPSPING PRIMARY KEY (own_addr, cluster_name));
 ```
+
+If you are using Docker and want a quick MySQL instance, you could using something like the following.
+```
+docker run --name wildfly-assist-mysql -e MYSQL_ROOT_PASSWORD=something -d mysql:5.7.8
+```
+
+Then you could connect to it with the following and setup the database.
+```
+docker run -it --link wildfly-assist-mysql:mysql --rm mysql:5.7.8 sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'
+```
