@@ -82,3 +82,16 @@ Then you could connect to it with the following and setup the database.
 ```
 docker run -it --link wildfly-assist-mysql:mysql --rm mysql:5.7.8 sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'
 ```
+
+I've added the MySQL driver and an example Wildfly 8.2.0 HA Standalone configuration file in the extras directory.
+
+Below are a few of my own notes that are of no interest to anyone else.
+```
+docker run -ti zoglmannk/wildfly:8.2.0 bash
+apt-get install ssh -y
+scp kaz@192.168.1.6:/Users/kaz/working-jgroups/mysql-connector-java-5.1.36-bin.jar /as/app/wildfly/8.2.0/standalone/deployments/
+scp kaz@192.168.1.6:/Users/kaz/working-jgroups/standalone-ha.xml /as/app/wildfly/8.2.0/standalone/configuration
+scp kaz@192.168.1.6:/Users/kaz/test/target/test.war /as/app/wildfly/8.2.0/standalone/deployments
+
+LD_PRELOAD=/as/app/cpu-helper/bin/libnumcpus.so JBOSS_BIND_ADDRESS_PUBLIC=`ifconfig eth0 | awk -F ':' '/inet addr:/ {print $2}' | awk '{print $1}'` JAVA_OPTS="-XX:ParallelGCThreads=`nproc` -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Doracle.jdbc.timezoneAsRegion=false" /as/app/wildfly/8.2.0/bin/standalone.sh -server-config=standalone-ha.xml
+```
